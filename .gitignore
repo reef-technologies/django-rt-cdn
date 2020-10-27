@@ -1,0 +1,12 @@
+*.pyc
+docs/_build
+.nox
+*.egg-info
+*.egg
+.coverage
+reports/
+build/
+dist/
+.cache/
+.eggs/
+.idea/
