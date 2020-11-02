@@ -3,6 +3,10 @@ django-rt-cdn
 
 Django app for a CDN solution based on [cf-workers-rt-cdn](https://github.com/reef-technologies/cf-workers-rt-cdn)
 
+Dependencies:
+-------------
+
+* Cloudflare Workers RT CDN >= 1.0.1 < 2.0.0
 
 ImageKit support:
 -----------------

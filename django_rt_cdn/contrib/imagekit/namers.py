@@ -24,7 +24,7 @@ def cdn_file_namer(generator):
     else:
         # For source files with relative names (like Django media files),
         # use the source's name to create the new filename.
-        dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, source_filename)
+        dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, '{}-cdn'.format(source_filename))
 
     ext = suggest_extension(source_filename or '', generator.format)
     marker = getattr(generator, 'width', None)
@@ -32,5 +32,6 @@ def cdn_file_namer(generator):
         marker = generator.get_hash()[:12]
     else:
         marker = '{}w'.format(marker)
+
     basename = os.path.splitext(os.path.basename(source_filename))[0]
     return os.path.normpath(os.path.join(dir, '{}-{}{}'.format(basename, marker, ext)))
