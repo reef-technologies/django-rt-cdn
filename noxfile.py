@@ -7,9 +7,10 @@ PY_PATHS = ['django_rt_cdn', 'tests', 'noxfile.py']
 
 REQUIREMENTS_FORMAT = ['black==20.8b1', 'isort==5.6.4', 'docformatter==1.3.1']
 REQUIREMENTS_LINT = [*REQUIREMENTS_FORMAT, 'flake8==3.8.4']
+REQUIREMENTS_TEST = ['pytest==6.1.1', 'pytest-django==4.1.0']
 
 nox.options.reuse_existing_virtualenvs = True
-nox.options.sessions = ['lint']
+nox.options.sessions = ['lint', 'test']
 
 
 @nox.session(name='format', python=PYTHON_VERSION)
@@ -55,3 +56,10 @@ def lint(session):
         *PY_PATHS,
     )
     session.run('flake8', *PY_PATHS)
+
+
+@nox.session(python=PYTHON_VERSION)
+def test(session):
+    """Run tests."""
+    session.install('-e', '.', *REQUIREMENTS_TEST)
+    session.run('pytest', *session.posargs)
