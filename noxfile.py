@@ -17,16 +17,14 @@ nox.options.sessions = ['lint', 'test']
 def format_(session):
     """Format the code."""
     session.install(*REQUIREMENTS_FORMAT)
-    session.run(
-        'black', '-l', '88', '-t', 'py38', '-S', '--exclude=.*/migrations/.*', *PY_PATHS
-    )
+    session.run('black', '-l', '100', '-t', 'py38', '-S', '--exclude=.*/migrations/.*', *PY_PATHS)
     session.run('isort', *PY_PATHS)
     session.run(
         'docformatter',
         '--in-place',
         '--recursive',
-        '--wrap-summaries=88',
-        '--wrap-descriptions=88',
+        '--wrap-summaries=100',
+        '--wrap-descriptions=100',
         *PY_PATHS,
     )
 
@@ -38,7 +36,7 @@ def lint(session):
     session.run(
         'black',
         '-l',
-        '88',
+        '100',
         '-t',
         'py38',
         '-S',
@@ -51,8 +49,8 @@ def lint(session):
         'docformatter',
         '--check',
         '--recursive',
-        '--wrap-summaries=88',
-        '--wrap-descriptions=88',
+        '--wrap-summaries=100',
+        '--wrap-descriptions=100',
         *PY_PATHS,
     )
     session.run('flake8', *PY_PATHS)
