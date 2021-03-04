@@ -19,7 +19,7 @@ class ImageRenderer(JSONRenderer):
 
             accept_header = request.headers.get('Accept')
             accept_types = [self.__class__.media_type, media_type]
-            if get_best_match(accept_header, accept_types) == media_type:
+            if accept_header and get_best_match(accept_header, accept_types) == media_type:
                 self.media_type = media_type
                 self.charset = charset
             else:
