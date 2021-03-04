@@ -9,6 +9,7 @@ class TokenAuth(APIKeyHeader):
         token = getattr(settings, 'CDN_API_TOKEN', None)
         if token is None:
             return ''
-        if key == token:
-            return key
+        header = 'ApiKey {}'.format(token)
+        if key == header:
+            return token
         return None
