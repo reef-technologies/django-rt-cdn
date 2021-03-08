@@ -3,9 +3,11 @@ from urllib.parse import unquote, urlparse
 
 import requests
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from imagekit.cachefiles import ImageCacheFile
 from imagekit.registry import generator_registry
+from imagekit.utils import get_by_qname
 from ninja import NinjaAPI, Schema
 from ninja.responses import codes_4xx
 from pydantic import PositiveInt
@@ -24,6 +26,7 @@ session = requests.Session()
 
 class Success(Schema):
     url: HttpUrl
+    origin: HttpUrl
 
 
 class ErrorDetail(Schema):
@@ -36,6 +39,10 @@ class Error(Schema):
     detail: List[ErrorDetail]
 
 
+def default_request_handler(session, origin, **kwargs):
+    return session.get(origin, **kwargs)
+
+
 @api.get('/image', tags=['Image processing'], response={200: Success, codes_4xx: Error})
 def image(
     request,
@@ -44,7 +51,13 @@ def image(
     format: FormatType = None,
     force: bool = False,
 ):
-    response = session.get(origin)
+    request_handler = getattr(settings, 'CDN_IMAGE_REQUEST_HANDLER', None)
+    if request_handler is not None:
+        request_handler_fn = get_by_qname(request_handler, 'request handler')
+    else:
+        request_handler_fn = default_request_handler
+
+    response = request_handler_fn(session, origin)
 
     try:
         response.raise_for_status()
@@ -85,4 +98,4 @@ def image(
         file.generate(force=force)
         setattr(request, 'image_file', file)
 
-    return {'url': file.url}
+    return {'url': file.url, 'origin': origin}
