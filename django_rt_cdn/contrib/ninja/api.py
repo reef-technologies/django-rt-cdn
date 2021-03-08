@@ -40,7 +40,7 @@ class Error(Schema):
 
 
 def default_request_handler(session, origin, **kwargs):
-    return session.get(origin, **kwargs)
+    return origin, session.get(origin, **kwargs)
 
 
 @api.get('/image', tags=['Image processing'], response={200: Success, codes_4xx: Error})
@@ -57,7 +57,9 @@ def image(
     else:
         request_handler_fn = default_request_handler
 
-    response = request_handler_fn(session, origin)
+    origin, response = request_handler_fn(
+        session, origin=origin, width=width, format=format, force=force
+    )
 
     try:
         response.raise_for_status()
