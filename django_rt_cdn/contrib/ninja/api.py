@@ -21,7 +21,6 @@ FormatType = Literal['bmp', 'ico', 'jpeg', 'png', 'tiff', 'webp']
 
 
 api = NinjaAPI(title='RT CDN API', version='1.0.0', auth=TokenAuth(), renderer=ImageRenderer())
-session = requests.Session()
 
 
 class Success(Schema):
@@ -39,8 +38,9 @@ class Error(Schema):
     detail: List[ErrorDetail]
 
 
-def default_request_handler(session, origin, **kwargs):
-    return origin, session.get(origin, **kwargs)
+def default_request_handler(request, origin, **kwargs):
+    kwargs.setdefault('timeout', 5.0)
+    return requests.get(origin, **kwargs)
 
 
 @api.get('/image', tags=['Image processing'], response={200: Success, codes_4xx: Error})
@@ -57,9 +57,7 @@ def image(
     else:
         request_handler_fn = default_request_handler
 
-    origin, response = request_handler_fn(
-        session, origin=origin, width=width, format=format, force=force
-    )
+    response = request_handler_fn(request, origin=origin, width=width, format=format, force=force)
 
     try:
         response.raise_for_status()
@@ -100,4 +98,4 @@ def image(
         file.generate(force=force)
         setattr(request, 'image_file', file)
 
-    return {'url': file.url, 'origin': origin}
+    return {'url': file.url, 'origin': response.url}
