@@ -57,7 +57,7 @@ def image(
     else:
         request_handler_fn = default_request_handler
 
-    response = request_handler_fn(request, origin=origin, width=width, format=format, force=force)
+    response = request_handler_fn(request, origin=origin)
 
     try:
         response.raise_for_status()
