@@ -25,7 +25,9 @@ def cdn_file_namer(generator):
     if width is None:
         dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, os.path.dirname(source_filename))
     else:
-        dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, '{}-cdn'.format(source_filename))
+        dir = '{}-cdn'.format(source_filename)
+        if not dir.startswith(settings.IMAGEKIT_CACHEFILE_DIR):
+            dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, dir)
 
     ext = suggest_extension(source_filename, generator.format)
     if width is None:
