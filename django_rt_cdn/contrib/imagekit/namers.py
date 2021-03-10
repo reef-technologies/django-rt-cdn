@@ -22,16 +22,13 @@ def cdn_file_namer(generator):
     if source_filename is None:
         source_filename = str(uuid.uuid4().hex)
 
-    if width is None:
-        dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, os.path.dirname(source_filename))
-    else:
-        dir = '{}-cdn'.format(source_filename)
-        if not dir.startswith(settings.IMAGEKIT_CACHEFILE_DIR):
-            dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, dir)
+    dir = '{}-cdn'.format(source_filename)
+    if not dir.startswith(settings.IMAGEKIT_CACHEFILE_DIR):
+        dir = os.path.join(settings.IMAGEKIT_CACHEFILE_DIR, dir)
 
     ext = suggest_extension(source_filename, generator.format)
     if width is None:
-        marker = ''
+        marker = '-orig'
     else:
         marker = '-{}w'.format(width)
 
