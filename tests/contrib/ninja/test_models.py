@@ -1,0 +1,17 @@
+import pytest
+
+from django_rt_cdn.contrib.ninja import ImageIn
+
+
+class TestImageIn:
+    @pytest.mark.parametrize(
+        ('origin', 'expected'),
+        [
+            ('https://example.com/origin.jpg', 'origin.jpg'),
+            ('https://example.com/deeply/nested/origin.jpg', 'deeply/nested/origin.jpg'),
+        ],
+    )
+    def test_default_path(self, origin, expected):
+        image_in = ImageIn(origin=origin)
+
+        assert image_in.path == expected
