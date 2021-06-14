@@ -15,3 +15,8 @@ class TestImageIn:
         image_in = ImageIn(origin=origin)
 
         assert image_in.path == expected
+
+    def test_setting_path(self):
+        image_in = ImageIn(origin='https://example.com/origin.jpg', path='custom.jpg')
+
+        assert image_in.path == 'custom.jpg'
