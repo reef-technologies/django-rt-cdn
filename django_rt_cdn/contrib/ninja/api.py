@@ -8,8 +8,9 @@ from django.core.files.base import ContentFile
 from imagekit.cachefiles import ImageCacheFile
 from imagekit.registry import generator_registry
 from imagekit.utils import get_by_qname
-from ninja import NinjaAPI, Schema
+from ninja import NinjaAPI
 from ninja.responses import codes_4xx
+from ninja.schema import Schema, validator
 from pydantic import PositiveInt
 from pydantic.networks import HttpUrl
 
@@ -24,9 +25,14 @@ api = NinjaAPI(title='RT CDN API', version='1.0.0', auth=TokenAuth())
 
 class ImageIn(Schema):
     origin: HttpUrl
+    path: str = ""
     width: PositiveInt = None
     format: FormatType = None
     force: bool = False
+
+    @validator('path', pre=True, always=True)
+    def default_path(cls, v, *, values, **kwargs):
+        return v or unquote(urlparse(values['origin']).path.lstrip('/'))
 
 
 class ImageOut(ImageIn):
@@ -72,10 +78,7 @@ def images(request, image_in: ImageIn):
             }
         raise
 
-    name = unquote(urlparse(response.url).path.lstrip('/'))
-    content = response.content
-
-    with ContentFile(content, name=name) as image_fd:
+    with ContentFile(response.content, name=image_in.path) as image_fd:
         if image_in.width is None:
             generator = generator_registry.get(
                 'cdn:origin_resolution',

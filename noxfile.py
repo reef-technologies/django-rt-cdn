@@ -5,9 +5,10 @@ import nox
 PYTHON_VERSION = '3.8'
 PY_PATHS = ['django_rt_cdn', 'tests', 'noxfile.py']
 
+REQUIREMENT_SELF = '.[imagekit,ninja]'
 REQUIREMENTS_FORMAT = ['black==20.8b1', 'isort==5.6.4', 'docformatter==1.3.1']
 REQUIREMENTS_LINT = [*REQUIREMENTS_FORMAT, 'flake8==3.8.4']
-REQUIREMENTS_TEST = ['pytest==6.1.1', 'pytest-django==4.1.0']
+REQUIREMENTS_TEST = ['Pillow', 'pytest==6.1.1', 'pytest-django==4.1.0']
 
 nox.options.reuse_existing_virtualenvs = True
 nox.options.sessions = ['lint', 'test']
@@ -32,7 +33,7 @@ def format_(session):
 @nox.session(python=PYTHON_VERSION)
 def lint(session):
     """Run linters."""
-    session.install('-e', '.', *REQUIREMENTS_LINT)
+    session.install('-e', REQUIREMENT_SELF, *REQUIREMENTS_LINT)
     session.run(
         'black',
         '-l',
@@ -59,5 +60,5 @@ def lint(session):
 @nox.session(python=PYTHON_VERSION)
 def test(session):
     """Run tests."""
-    session.install('-e', '.', *REQUIREMENTS_TEST)
+    session.install('-e', REQUIREMENT_SELF, *REQUIREMENTS_TEST)
     session.run('pytest', *session.posargs)
